@@ -62,7 +62,7 @@ datatable: true
     <br />  
     Our third filter identifies enrichment of putative driver genes in functionally coherent protein network modules confirmed by literature analysis to be cancer associated. 
     <br />  
-    Our approach is complementary to other domain enrichment approaches exploiting Pfam families, but benefits from more functionally coherent groupings of domains. Using a set of mutations from 22 cancers we detect 151 putative cancer drivers, of which 79 are not listed in cancer resources and include recently validated cancer genes EPHA7, DCC netrin-1 receptor and zinc-finger protein ZNF479.
+    Our approach is complementary to other domain enrichment approaches exploiting Pfam families, but benefits from more functionally coherent groupings of domains. Using a set of mutations from 22 cancers we detect 151 putative cancer drivers, of which 79 are not listed in cancer resources and include recently validated cancer associated genes EPHA7, DCC netrin-1 receptor and zinc-finger protein ZNF479.
     </p>
     <p>
         <a href = "https://doi.org/10.1101/399014" target = "_blank">Aricle pre-print available on bioRxiv </a>
@@ -71,9 +71,10 @@ datatable: true
 
     <br /> <br /> 
 
-    <h2> MutFams with top mutated genes for 22 cancer types</h2>
-       <p>
-        <a href = "mutfam2_www.html" target = "_self">MutFams grouped by cancer type</a>
+    <h2> MutFams with the top mutated genes for each of the 22 cancer types</h2>
+    
+    <p>
+        <a href = "mutfam_table.html" target = "_self">Table summarising 405 MutFams identified from 22 cancer types</a>
     </p>
 
 
@@ -103,14 +104,13 @@ datatable: true
       </tfoot>
     </table>
 
-    {% comment %} <table id="example" class="display" width="100%"></table> {% endcomment %}
     <table id="dt_mutfam_genes" class="display" width="100%"></table>
 
     <script>
       $(document).ready(function() {
         var base_url = 'https://raw.githubusercontent.com/paulashford/mutfam.github.io/master'              
         $('#dt_mutfam_genes').DataTable( {
-          "ajax": base_url + "/mf3.txt"
+          "ajax": base_url + "/mf_genes1.json"
         } );
       } );
      </script> 
