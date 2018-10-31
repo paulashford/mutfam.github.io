@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    
+    <!-- dataTables -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css">
+    <link rel="stylesheet" type="text/css" href="DataTables/datatables.min.css"/>
+ 
+  <!-- Le styles -->
+    <link href="bootstrap-4.1.3-dist/css/bootstrap.css" rel="stylesheet">
+    <style type="text/css">
+      body {
+        padding-top: 60px;
+        padding-bottom: 40px;
+        padding-left: 40px;
+        padding-right: 40px;
+      }
+    </style>
+
+    <title>MutFam - A CATH domain functional family based approach to identify putative cancer driver genes and driver mutations</title>
+
+    <script src="js/jquery-3.3.1.min.js"></script>
+    <script src="bootstrap-4.1.3-dist/js/bootstrap.js"</script>
+    <script type = "text/javascript" src = "mutfam_custom.js"></script>
+    <script type = "text/javascript" src="DataTables/datatables.min.js"></script>
+   
+
+</head>
+  
+  <body>
+
+    <hr /> 
+    <div class = "page-header">
+        <h1>
+            <b>MutFam</b> - A CATH domain functional family based approach to identify putative cancer driver genes and driver mutations
+             <small>Ashford <i> et al </i> 2018 </small>
+        </h1>
+    </div>
+    <hr />        
+    
+    <p id = "intro" >Tumour sequencing identifies highly recurrent point mutations in cancer driver genes, but rare functional mutations are hard to distinguish from large numbers of passengers. 
+    We developed a novel computational platform applying a multi-modal approach to filter out passengers and more robustly identify putative driver genes. 
+    <br />  
+    The primary filter identifies enrichment of cancer mutations in <b>CATH functional families (CATH-FunFams)</b> – structurally and functionally coherent sets of evolutionary related domains.  
+    <br />  
+    Using structural representatives from <b>CATH-FunFams</b>, we subsequently seek enrichment of mutations in 3D and show that these mutation clusters have a very significant tendency to lie close to known functional sites or conserved sites predicted using CATH-FunFams.  
+    <br />  
+    Our third filter identifies enrichment of putative driver genes in functionally coherent protein network modules confirmed by literature analysis to be cancer associated. 
+    <br />  
+    Our approach is complementary to other domain enrichment approaches exploiting Pfam families, but benefits from more functionally coherent groupings of domains. Using a set of mutations from 22 cancers we detect 151 putative cancer drivers, of which 79 are not listed in cancer resources and include recently validated cancer genes EPHA7, DCC netrin-1 receptor and zinc-finger protein ZNF479.
+    </p>
+    <p>
+        <a href = "https://doi.org/10.1101/399014" target = "_blank">Aricle pre-print available on bioRxiv </a>
+        (opens in a new window)
+    </p>
+
+    <br /> <br /> 
+
+    <h2> MutFams with top mutated genes for 22 cancer types</h2>
+       <p>
+        <a href = "mutfam2_www.html" target = "_self">MutFams grouped by cancer type</a>
+    </p>
+
+
+    <table id="dt_mutfam_genes" class="table dataTables" width="100%"%>
+      <thead>
+        <tr>
+        <th>MutFam</th>
+        <th>Gene</th>
+        <th>UniProt Acc</th>
+        <th>MutFam enrichment factor</th>
+        <th>Num. mutations in gene</th>
+        <th>Mutfam score</th>
+        <th>GO module</th>
+        <th>CGC nsSNVs</th>
+        <th>Miller</th>
+        <th>Cluster</th>
+        <th>Gene name</th>
+        <th>Cancers</th>
+        <th>CATH Superfamily</th>
+        <th>CATH FunFam</th>
+        <th>CATH link</th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+      <tfoot>
+      </tfoot>
+    </table>
+
+    {% comment %} <table id="example" class="display" width="100%"></table> {% endcomment %}
+    <table id="dt_mutfam_genes" class="display" width="100%"></table>
+
+    <script>
+      $(document).ready(function() {
+        var base_url = 'https://raw.githubusercontent.com/woof7/woof7.github.io/master'              
+        $('#dt_mutfam_genes').DataTable( {
+          "ajax": base_url + "/mf3.txt"
+        } );
+      } );
+     </script> 
+
+  </body>
+</html>
+
+
