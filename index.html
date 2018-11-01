@@ -8,9 +8,9 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     
-    <!-- dataTables -->
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css">
- 
+    <!-- dataTables --> 
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.18/b-1.5.4/b-html5-1.5.4/datatables.min.css"/>
+    
     <!-- Le styles -->
     <link href="bootstrap-4.1.3-dist/css/bootstrap.css" rel="stylesheet">
     <style>
@@ -23,6 +23,14 @@
       .table {
         font-size: 0.8em;
         width: 100%;
+      }
+      .badge-lg {
+        font-size: 1.2em;
+        margin: 0 0.1em 0.1em 0;
+      }
+      .dt-actions {
+
+        margin-bottom: 0.5em;
       }
     </style>
 
@@ -38,7 +46,7 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 
     <!-- DataTables -->
-    <script src="//cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.18/b-1.5.4/b-html5-1.5.4/datatables.min.js"></script>
 
   </head>
   
@@ -178,8 +186,6 @@
 
         </div>
 
-
-
       </div>
 
     </div>
@@ -188,25 +194,119 @@
 
 $(document).ready(function() {
   var base_url = 'https://raw.githubusercontent.com/paulashford/mutfam.github.io/master'              
+  
+  function hex_to_rgb(hex) {
+    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+      r: parseInt(result[1], 16),
+      g: parseInt(result[2], 16),
+      b: parseInt(result[3], 16)
+    } : null;
+  }
+
+  function is_dark(c) {
+    rgb = hex_to_rgb(c);
+    rgb_av = (rgb.r + rgb.g + rgb.b) / 3;
+    return rgb_av < (256/2);
+  }
+
+  function get_color(n) {
+    var colors = ["#3366cc", "#dc3912", "#ff9900", "#109618", "#990099", "#0099c6", "#dd4477", "#66aa00", "#b82e2e", "#316395", "#994499", "#22aa99", "#aaaa11", "#6633cc", "#e67300", "#8b0707", "#651067", "#329262", "#5574a6", "#3b3eac"];
+    return colors[n % colors.length];
+  }
+
+  function clean_text(text_in) {
+    // clean up whatever went wrong with protecting '/'
+    text_out = text_in
+    text_out = text_out.replace(/\\\//g, '/') // '\/' -> '/' 
+    return text_out;
+  }
+
+  var CANCER_TAGS = {
+    'BLCA': { desc: 'Bladder cancer' },
+    'BRCA': { desc: 'Breast invasive carcinoma' },
+    'COAD': { desc: 'Colon adenocarcinoma' },
+    'DLBC': { desc: 'Lymphoid Neoplasm Diffuse Large B-cell Lymphoma' },
+    'ESCA': { desc: 'Esophageal carcinoma' },
+    'GBM': { desc: 'Glioblastoma multiforme' },
+    'GLI': { desc: 'Gliomas' },
+    'KIRC': { desc: 'Kidney renal clear cell carcinoma' },
+    'LAML': { desc: 'Acute Myeloid Leukemia' },
+    'LGG': { desc: 'Low grade gliomas' },
+    'LIHC': { desc: 'Liver hepatocellular carcinoma' },
+    'LUAD': { desc: 'Lung adenocarcinoma' },
+    'LUSC': { desc: 'Lung squamous cell carcinoma' },
+    'OV': { desc: 'Ovarian serous cystadenocarcinoma' },
+    'PAAD': { desc: 'Pancreatic adenocarcinoma' },
+    'PRAD': { desc: 'Prostate adenocarcinoma' },
+    'READ': { desc: 'Rectum adenocarcinoma' },
+    'SKCM': { desc: 'Skin Cutaneous Melanoma' },
+    'STAD': { desc: 'Stomach adenocarcinoma' },
+    'THCA': { desc: 'Thyroid carcinoma' },
+    'UCEC': { desc: 'Uterine Corpus Endometrial Carcinoma' },
+    'UCS': { desc: 'Uterine Carcinosarcoma' },
+  };
+  
+  var col_idx = 0;
+  for (var tag_id in CANCER_TAGS) {
+    col = get_color(col_idx++);
+    CANCER_TAGS[tag_id].bg_color = col;
+    CANCER_TAGS[tag_id].color = is_dark(col) ? 'white' : 'black';
+  }
+
+  function render_cancer_tags(cancer_tags_str) {
+    cancer_tags = cancer_tags_str.split(/,\s+/)
+    tags = []
+    cancer_tags.forEach(function(tag_name) {
+      var tag = CANCER_TAGS[tag_name]
+      var tag_html = $('<span class="badge badge-lg" data-toggle="popover" />')
+        .css('background-color', tag.bg_color)
+        .css('color', tag.color)
+        .attr('title', tag.desc)
+        .text(tag_name)
+        .prop('outerHTML')
+      tags.push(tag_html)
+    });
+    return tags.join(' ')
+  }
+
+  dt_dom = '<"dt-actions"B>lfrtip'
+  dt_buttons = ['copy', 'csv']
+
   $('#mutfam-genes-table').DataTable( {
+    "dom": dt_dom,
+    "buttons": dt_buttons,
     "ajax": base_url + "/mf_genes1.json",
-    "columnDefs": [{
-      "targets": -1,
-      "render": function(col_data) {
-        clean_link = col_data.replace(/\\\//g, '/')
-        console.log( "link", col_data, clean_link )
-        return '<a href="' + clean_link + '">' + clean_link + '</a>'
+    "columnDefs": [
+      {
+        "targets": -1,
+        "render": function(col_data) {
+          clean_link = clean_text(col_data)
+          return '<a href="' + clean_link + '">' + clean_link + '</a>'
+        },
       },
-    }]
+      {
+        "targets": 11,
+        "render": render_cancer_tags,
+      }
+    ]
   });
   $('#mutfam-summary-table').DataTable( {
+    "dom": dt_dom,
+    "buttons": dt_buttons,
     "ajax": base_url + "/mf_summary1.json",
-    "columnDefs": [{
-      "targets": 2,
-      "render": function(sfam_id) {
-        return '<a href="http://www.cathdb.info/superfamily/' + sfam_id + '" target="_blank">' + sfam_id + '</a>'
+    "columnDefs": [
+      {
+        "targets": 0,
+        "render": render_cancer_tags,
       },
-    }]
+      {
+        "targets": 2,
+        "render": function(sfam_id) {
+          return '<a href="http://www.cathdb.info/superfamily/' + sfam_id + '" target="_blank">' + sfam_id + '</a>'
+        },
+      }
+    ]
   });
 });
 
